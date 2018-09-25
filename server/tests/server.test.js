@@ -10,7 +10,9 @@ const todos = [{
   text: 'Test todo 1'
 }, {
   _id: new ObjectID(),
-  text: 'Test todo 2'
+  text: 'Test todo 2',
+  isCompleted: true,
+  completedAt: 333
 }];
 
 beforeEach((done) => {
@@ -133,5 +135,65 @@ describe('DELETE /todos:id', () => {
       .delete(`/todos/123`)
       .expect(404)
       .end(done);
+  });
+});
+
+describe('PATCH /todos:id', () => {
+  it('should update the text, isCompleted to true and set completedAt', (done) => {
+    var id = todos[0]._id.toHexString();
+    var updateObj = {
+      text: "Update from code",
+      isCompleted: true
+    };
+
+    request(app)
+      .patch(`/todos/${id}`)
+      .send(updateObj)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.todo.isCompleted).toBe(true);
+        expect(res.body.todo.completedAt).toBeTruthy();
+        expect(res.body.todo.text).toBe(updateObj.text);
+      })
+      .end((err, res) => {
+        if(err){
+          return done(err);
+        }
+        Todo.findById(id).then((todo) => {
+          expect(todo.isCompleted).toBe(true);
+          expect(todo.completedAt).toBeTruthy();
+          expect(todo.text).toBe(updateObj.text);
+          done();
+        }).catch((e) => done(e));
+      });
+  });
+
+  it('should update the text, isCompleted to false and set completedAt to null', (done) => {
+    var id = todos[1]._id.toHexString();
+    var updateObj = {
+      text: "Update from code!!",
+      isCompleted: false
+    };
+
+    request(app)
+      .patch(`/todos/${id}`)
+      .send(updateObj)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.todo.isCompleted).toBe(false);
+        expect(res.body.todo.completedAt).toBeFalsy();
+        expect(res.body.todo.text).toBe(updateObj.text);
+      })
+      .end((err, res) => {
+        if(err){
+          return done(err);
+        }
+        Todo.findById(id).then((todo) => {
+          expect(todo.isCompleted).toBe(false);
+          expect(todo.completedAt).toBeFalsy();
+          expect(todo.text).toBe(updateObj.text);
+          done();
+        }).catch((e) => done(e));
+      });
   });
 });
