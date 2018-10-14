@@ -46,7 +46,7 @@ app.get('/todos/:id', (req, res) => {
       return res.status(404).send();
     }
     res.send({todo});
-  }, (err) => {
+  }).catch((e) => {
     res.status(400).send();
   });
 });
@@ -62,7 +62,7 @@ app.delete('/todos/:id', (req, res) => {
       return res.status(404).send();
     }
     res.status(200).send({todo});
-  }, (err) => {
+  }).catch((e) => {
     res.status(400).send();
   });
 });
@@ -87,9 +87,9 @@ app.patch('/todos/:id', (req, res) => {
       return res.status(404).send();
     }
     res.status(200).send({todo});
-  }, (err) => {
+  }).catch((e) => {
     res.status(400).send();
-  });
+  })
 });
 
 app.post('/users', (req, res) => {
@@ -101,7 +101,7 @@ app.post('/users', (req, res) => {
       res.header('x-auth', token).send(user);
     }).catch((err) => {
       res.status(400).send(err);
-    });
+    })
 });
 
 app.get('/users/me', authenticate, (req, res) => {
@@ -113,24 +113,3 @@ app.listen(port, () => {
 });
 
 module.exports = {app};
-// // Object instanciation examples
-// var newTodo = new Todo({
-//   text: "    Test Todo 1"
-// });
-//
-// newTodo.save().then((doc) => {
-//   console.log(`Saved Todo: ${JSON.stringify(doc, undefined, 2)}`);
-// }, (err) => {
-//   console.log('Unable to save todo', err);
-// });
-//
-//
-// var newUser = new User({
-//   email: "    daniyal.awan@hotmail.com"
-// });
-//
-// newUser.save().then((user) => {
-//   console.log(`Saved User: ${JSON.stringify(user, undefined, 2)}`);
-// }, (err) => {
-//   console.log('Unable to save user to database', err);
-// });
